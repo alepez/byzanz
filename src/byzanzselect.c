@@ -218,12 +218,14 @@ realize_cb (GtkWidget *widget, gpointer datap)
 {
   GdkWindow *window = gtk_widget_get_window (widget);
   GdkCursor *cursor;
+  GdkDisplay *display;
 
   gdk_window_set_events (window, gdk_window_get_events (window) |
       GDK_BUTTON_PRESS_MASK |
       GDK_BUTTON_RELEASE_MASK |
       GDK_POINTER_MOTION_MASK);
-  cursor = gdk_cursor_new (GDK_CROSSHAIR);
+  display = gdk_window_get_display (window);
+  cursor = gdk_cursor_new_for_display ( display, GDK_CROSSHAIR);
   gdk_window_set_cursor (window, cursor);
   g_object_unref (cursor);
   gdk_window_set_background_pattern (window, NULL);
@@ -338,13 +340,13 @@ byzanz_select_window (ByzanzSelectData *data)
   GdkDeviceManager *device_manager;
   GdkDisplay *display;
 
-  cursor = gdk_cursor_new (GDK_CROSSHAIR);
   data->window = gtk_invisible_new ();
   g_signal_connect (data->window, "button-press-event", 
       G_CALLBACK (select_window_button_pressed_cb), data);
   gtk_widget_show (data->window);
   window = gtk_widget_get_window (data->window);
   display = gdk_window_get_display (window);
+  cursor = gdk_cursor_new_for_display ( display, GDK_CROSSHAIR);
   device_manager = gdk_display_get_device_manager (display);
   device = gdk_device_manager_get_client_pointer (device_manager);
   gdk_device_grab (device, window, GDK_OWNERSHIP_NONE, FALSE, GDK_BUTTON_PRESS_MASK, cursor, GDK_CURRENT_TIME);
